@@ -2,7 +2,7 @@
 set -u
 
 failed=0
-for tool in git make sh awk cat chmod cmp dirname id ln mkdir mktemp rmdir rm uname; do
+for tool in git make sh awk cat chmod cmp cp dirname id ln mkdir mktemp rmdir rm uname; do
     if command -v "$tool" >/dev/null 2>&1; then
         printf 'PASS: %s available\n' "$tool"
     else

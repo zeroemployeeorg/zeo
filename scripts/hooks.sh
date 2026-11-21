@@ -1,11 +1,27 @@
 #!/bin/sh
 set -eu
+unset CDPATH
 cd "$(dirname "$0")/.."
-if git config --get core.hooksPath >/dev/null; then
+if git config --get core.hooksPath >/dev/null 2>&1; then
     printf '%s\n' 'FIX: custom core.hooksPath is configured; have its owner integrate scripts/pre-push without replacing existing hooks.' >&2
     exit 1
+elif [ "$?" -ne 1 ]; then
+    printf '%s\n' 'FIX: cannot read Git hook configuration.' >&2
+    exit 1
 fi
-hook=$(git rev-parse --git-path hooks/pre-push)
+common_dir=$(git rev-parse --git-common-dir)
+common_dir=$(cd -P "$common_dir" && pwd -P)
+reported_hook=$(git rev-parse --git-path hooks/pre-push)
+reported_dir=$(dirname "$reported_hook")
+if [ "${reported_dir##*/}" != hooks ] ||
+    ! reported_parent=$(cd -P "$(dirname "$reported_dir")" && pwd -P) ||
+    [ "$reported_parent" != "$common_dir" ] ||
+    [ -L "$common_dir/hooks" ]; then
+    printf '%s\n' 'FIX: Git hooks directory must be inside the common Git directory and must not be a symlink.' >&2
+    exit 1
+fi
+hook_dir="$common_dir/hooks"
+hook="$hook_dir/pre-push"
 case "${1:-}" in
 check)
     if [ ! -L "$hook" ] && [ -f "$hook" ] && [ -x "$hook" ] && cmp -s scripts/pre-push "$hook"; then
@@ -23,7 +39,6 @@ install)
         fi
         chmod 755 "$hook"
     else
-        hook_dir=$(dirname "$hook")
         mkdir -p "$hook_dir"
         staging=$(mktemp -d "$hook_dir/.pre-push.XXXXXXXX")
         trap 'rm -f "$staging/pre-push"; rmdir "$staging"' EXIT

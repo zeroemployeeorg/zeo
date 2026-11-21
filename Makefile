@@ -2,7 +2,7 @@
 GO ?= go
 export GO
 
-.PHONY: help help-all doctor hooks verify lint format-check vet test test-bootstrap build clean
+.PHONY: help help-all doctor hooks test-hooks verify lint format-check vet test test-bootstrap build clean
 
 help: ## Show the first-time development guide
 	@printf '%s\n' 'ZEO distribution assembly tools' '' \
@@ -22,7 +22,11 @@ doctor: ## Inspect tools and the Git hook without changing anything
 hooks: ## Install the main-push guard while preserving existing custom hooks
 	@sh scripts/hooks.sh install
 
-verify: lint vet test ## Check formatting, shell syntax, Go diagnostics and race-enabled tests
+test-hooks: ## Check hook installation and refusal in disposable Git repositories
+	@sh scripts/check-toolchain.sh
+	@sh scripts/test-hooks.sh
+
+verify: lint vet test test-hooks ## Check formatting, shell syntax, Go diagnostics and race-enabled tests, plus hook behavior
 
 lint: format-check ## Check Go formatting and shell syntax
 	@for file in scripts/*.sh scripts/pre-push; do sh -n "$$file" || exit 1; done
