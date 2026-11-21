@@ -1,0 +1,9 @@
+#!/bin/sh
+# zeo-main-push-guard-v1: local guard only; server protection remains separate.
+set -eu
+while read -r local_ref local_oid remote_ref remote_oid; do
+    if [ "$remote_ref" = refs/heads/main ]; then
+        printf '%s\n' 'REFUSED: direct pushes or deletions of main are prohibited. Push a work branch and use the reviewed merger route.' >&2
+        exit 1
+    fi
+done

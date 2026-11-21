@@ -1,0 +1,1 @@
+- Add documented Make targets for contributor setup, source verification and candidate builds, with a read-only development doctor and a local main-push guard.
