@@ -32,3 +32,7 @@ Candidate [SSH target enrollment](docs/ssh-target-bootstrap.md) in `cmd/zeo-targ
 
 
 Candidate [job-check composition](docs/job-checks.md) in `cmd/zeo-job-checks` preserves reviewed check IDs, pinned source anchors and invocation definitions when job inputs change. It emits shell source for a runner; it does not execute or authorize jobs. The exact `280475dbc870b0dc7bf4d4a074d0c553efc4141e` Linux source gate passed vet and race tests across seven packages; original log SHA256 `58474fa5ba85d2c3bd4515ca15f9890491ed872504f503fe31dfcc99c7e24922`. Subsequent council review found SSH authorization and composition defects. The repaired source at `42ac5d163fdb2723a4dd402e93917541a770a48b` subsequently passed the Linux `make verify` gate: vet and race-enabled tests passed across all seven packages. The complete original log SHA256 is `f326d2802dd7c3b84496365923aa0d3a5ceb09a91f984d3e9260d047d55a3946`. This qualifies the repair source and its regressions; target enrollment and the integrated distribution remain unqualified.
+
+## License
+
+This repository is licensed under the MIT License. See [LICENSE](LICENSE).
